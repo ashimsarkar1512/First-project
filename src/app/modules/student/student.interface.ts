@@ -1,4 +1,6 @@
-export type Gurdian = {
+import { Model } from 'mongoose';
+
+export type TGurdian = {
   fatherName: string;
   fatherOccupation: string;
   fatherContactNo: string;
@@ -13,18 +15,19 @@ export type UserName = {
   lastName: string;
 };
 
-export type LocalGurdian = {
+export type TLocalGurdian = {
   name: string;
   occupation: string;
   contactNo: string;
   address: string;
 };
 
-export type Student = {
+export type TStudent = {
   id: string;
+  password: string;
 
   name: UserName;
-  gender: 'male' | 'female';
+  gender: 'male' | 'female' | 'other';
   dateOfBirth?: string;
   email: string;
   contactNo: string;
@@ -32,8 +35,22 @@ export type Student = {
   bloodGroup?: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
   presentAddress: string;
   permanentAddress: string;
-  guardian: Gurdian;
-  localGurdian: LocalGurdian;
+  guardian: TGurdian;
+  localGurdian: TLocalGurdian;
   profileImg?: string;
   isActive: 'active' | 'blocked';
+  isDeleted: boolean;
 };
+
+// for creating statics
+
+export interface StudentModel extends Model<TStudent> {
+  isUserExists(id: string): Promise<TStudent | null>;
+}
+
+// for creating instand
+// export type studentMethods={
+//   isUserExists(id:string):Promise<TStudent|null>
+// }
+
+// export type studentModel=Model<TStudent, Record<string,never>, studentMethods>;
