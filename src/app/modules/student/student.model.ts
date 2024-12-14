@@ -1,16 +1,12 @@
 import { Schema, model } from 'mongoose';
 import validator from 'validator';
-import {
-  StudentModel,
-  TGurdian,
-  TLocalGurdian,
-  TStudent,
-  UserName,
-} from './student/student.interface';
-import bycript from 'bcrypt';
-import config from '../config';
 
-const userNameSchema = new Schema<UserName>({
+
+import { StudentModel, TGurdian, TLocalGurdian, TStudent, TUserName } from './student.interface';
+
+
+
+const userNameSchema = new Schema<TUserName>({
   firstName: {
     type: String,
     required: [true, 'first name is required'],
@@ -100,11 +96,14 @@ const localGurdianSchema = new Schema<TLocalGurdian>({
 const studentSchema = new Schema<TStudent, StudentModel>(
   {
     id: { type: String, required: true, unique: true },
-    password: {
-      type: String,
-      required: true,
-      maxlength: [20, 'password can not be more than 20 characters'],
+
+    user:{
+           type:Schema.Types.ObjectId,
+           required:[true,"user id id required"],
+           unique:true,
+           ref:'user'
     },
+   
     name: {
       type: userNameSchema,
       required: [true, 'Student name is required'],
@@ -194,27 +193,6 @@ studentSchema.virtual('fullName').get(function () {
   return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
 });
 
-// creating middleware
-
-studentSchema.pre('save', async function (next) {
-  // console.log(this,'pre hook:we will save data');
-
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
-  const user = this;
-
-  // hassing password and save into db
-
-  user.password = await bycript.hash(
-    user.password,
-    Number(config.bcrypt_salts_rounds),
-  );
-  next();
-});
-
-studentSchema.post('save', function (doc, next) {
-  doc.password = '';
-  next();
-});
 
 studentSchema.pre('find', function (next) {
   this.find({ isDeleted: { $ne: true } });

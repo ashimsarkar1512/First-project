@@ -42,9 +42,11 @@ const localGuardianValidationSchema = z.object({
 });
 
 // Main Student Schema
-const studentValidationSchema = z.object({
-  id: z.string().min(1, 'ID is required'),
+export const StudentValidationSchema = z.object({
+ body:z.object({
+ 
   password: z.string().max(20),
+ student:z.object({
   name: userNameValidationSchema,
   gender: z.enum(['male', 'female', 'other']),
   dateOfBirth: z.string().optional(), // Assuming a date string format
@@ -64,8 +66,10 @@ const studentValidationSchema = z.object({
   guardian: guardianValidationSchema,
   localGurdian: localGuardianValidationSchema,
   profileImg: z.string().url('Profile image must be a valid URL').optional(),
-  isActive: z.enum(['active', 'blocked']).default('active'),
-  isDeleted: z.boolean(),
+ })
+})
 });
 
-export default studentValidationSchema;
+export  const studentValidations={
+StudentValidationSchema
+};
